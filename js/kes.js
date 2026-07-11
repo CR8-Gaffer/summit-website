@@ -150,7 +150,7 @@
 
   // one tick of the stepper: near the target it moves <1 frame per tick
   // (strictly sequential draws); far away it accelerates, capped at ~2.4
-  // frames per 60Hz-normalised tick so a full-page jump catches up in about
+  // frames per 60Hz-normalised tick so a full-page jump catches up in under
   // a second regardless of display refresh rate.
   function stepFrames(time, deltaTime) {
     var diff = targetPos - pos;
@@ -160,7 +160,7 @@
         pos = targetPos;
       } else {
         var k = Math.min((deltaTime || 16.67) / 16.67, 3);
-        var step = Math.min(mag, Math.max(0.9 * k, mag * 0.11 * k), 2.4 * k);
+        var step = Math.min(mag, Math.max(0.9 * k, mag * 0.13 * k), 3 * k);
         pos += (diff > 0 ? step : -step);
       }
     }
@@ -174,7 +174,7 @@
       cur = 0; draw(0); window.addEventListener('resize', refit, { passive: true }); return;
     }
     gsap.registerPlugin(ScrollTrigger);
-    var lenis = new Lenis({ duration: 1.15, easing: function (x) { return Math.min(1, 1.001 - Math.pow(2, -10 * x)); }, smoothWheel: true, touchMultiplier: 1.5 });
+    var lenis = new Lenis({ lerp: 0.12, smoothWheel: true, touchMultiplier: 1.5 }); // lerp (not duration): fixed-duration easing restarts per wheel burst and judders on trackpads
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
     // stepper registered AFTER lenis.raf so each tick steps toward the
