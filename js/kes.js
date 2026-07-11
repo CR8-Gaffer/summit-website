@@ -170,18 +170,17 @@
 
   function initScroll() {
     sizeCanvas(); // never depend on frame 0's load success for canvas sizing
-    if (!window.gsap || !window.ScrollTrigger || !window.Lenis) {
+    if (!window.gsap || !window.ScrollTrigger) {
       cur = 0; draw(0); window.addEventListener('resize', refit, { passive: true }); return;
     }
     gsap.registerPlugin(ScrollTrigger);
-    var lenis = new Lenis({ lerp: 0.12, smoothWheel: true, touchMultiplier: 1.5 }); // lerp (not duration): fixed-duration easing restarts per wheel burst and judders on trackpads
-    lenis.on('scroll', ScrollTrigger.update);
-    gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
-    // stepper registered AFTER lenis.raf so each tick steps toward the
-    // targetPos computed from that same tick's scroll update (no added lag)
+    // NATIVE scroll only — no wheel interception. Scrollbar dragging always
+    // felt right because it bypassed Lenis; wheel smoothing (duration AND
+    // lerp modes) stalled/blocked on trackpads. The frame stepper below is
+    // the single smoothing layer for the sequence; the page itself scrolls
+    // exactly as the OS intends.
     stepping = true;
     gsap.ticker.add(stepFrames);
-    gsap.ticker.lagSmoothing(0);
     var st = ScrollTrigger.create({ trigger: '.kes-exp', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: function (self) { render(self.progress); } });
     window.addEventListener('resize', function () { refit(); ScrollTrigger.refresh(); }, { passive: true });
     render(st.progress, true); // honour scroll restoration / mid-page anchors
