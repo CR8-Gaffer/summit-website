@@ -171,6 +171,12 @@ html.reduced .phero .pimg img{animation:none;}
 .band-paper .proc,.band-paper .proc .s{border-color:var(--line-l);}
 .band-paper .proc .s h3{color:var(--ink);} .band-paper .proc .s p{color:var(--ink-soft);} .band-paper .proc .s .no{color:var(--navy);}
 
+/* ---- FLEET band (full-bleed image strip) ---- */
+.fleetband{position:relative;overflow:hidden;background:var(--g900);}
+.fleetband img{display:block;width:100%;height:auto;max-height:74vh;object-fit:cover;object-position:center;filter:saturate(.92);}
+.fleetband .cap{position:absolute;left:0;right:0;bottom:0;padding:clamp(18px,3vw,36px) var(--pad);background:linear-gradient(180deg,transparent,rgba(11,16,20,.82));display:flex;justify-content:space-between;align-items:flex-end;gap:.8rem 1.6rem;flex-wrap:wrap;}
+.fleetband .cap .line{color:#D3DADE;font-size:clamp(.92rem,1.4vw,1.05rem);text-shadow:0 1px 14px rgba(0,0,0,.55);}
+
 /* ---- RECORD doc ---- */
 .rec-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(34px,6vw,84px);align-items:center;}
 @media(max-width:900px){.rec-grid{grid-template-columns:1fr;gap:2.4rem;}}
