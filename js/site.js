@@ -6,9 +6,20 @@
   var nav = document.getElementById('nav');
   if (nav) {
     var always = nav.classList.contains('solid'); // inner pages author 'solid'; never strip it
-    var onScroll = function () { nav.classList.toggle('solid', always || window.scrollY > 40); };
+    var lastY = window.scrollY;
+    var onScroll = function () {
+      var y = window.scrollY;
+      nav.classList.toggle('solid', always || y > 40);
+      // slip away scrolling down, return on scroll-up or near the top;
+      // a small delta gate stops trackpad micro-jitter from flickering it
+      if (Math.abs(y - lastY) > 6) {
+        nav.classList.toggle('hide', y > lastY && y > 160);
+        lastY = y;
+      }
+    };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
+    nav.addEventListener('focusin', function () { nav.classList.remove('hide'); }); // keyboard users always reach it
   }
 
   // hero video (home): fade in once it's actually playing; retry politely if

@@ -72,7 +72,8 @@ body.snap .pillar,body.snap .pillar .item{transition:none!important;}
 
 /* ---- END CTA (solid, covers the canvas; same --kesbg = seamless) ---- */
 .cta-end{position:relative;z-index:3;background:var(--kesbg);padding:clamp(90px,15vh,168px) var(--pad);border-top:1px solid var(--line-d);overflow:hidden;}
-.cta-end .tex{position:absolute;inset:0;opacity:.45;pointer-events:none;background-image:linear-gradient(var(--line-d) 1px,transparent 1px),linear-gradient(90deg,var(--line-d) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(circle at 72% 28%,#000,transparent 68%);mask-image:radial-gradient(circle at 72% 28%,#000,transparent 68%);}
+.cta-end .tex{position:absolute;inset:0;opacity:.45;pointer-events:none;background-image:linear-gradient(var(--line-d) 1px,transparent 1px),linear-gradient(90deg,var(--line-d) 1px,transparent 1px);background-size:60px 60px;-webkit-mask-image:radial-gradient(circle at 72% 28%,#000,transparent 68%);mask-image:radial-gradient(circle at 72% 28%,#000,transparent 68%);animation:griddrift 60s linear infinite;}
+html.reduced .cta-end .tex{animation:none;}
 .cta-end .inner{position:relative;z-index:2;max-width:1080px;margin:0 auto;}
 .cta-end h2{font-size:clamp(2.1rem,5vw,3.5rem);letter-spacing:-.032em;max-width:15ch;margin-top:1rem;}
 .cta-end h2 .lt{color:var(--navy-br);}
