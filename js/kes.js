@@ -20,8 +20,11 @@
   var cue     = document.getElementById('cue');
   var pillars = Array.prototype.slice.call(document.querySelectorAll('.pillar'));
 
-  // grade that pulls the grey studio backdrop down to near-black while the
-  // brushed-steel object stays legible (moody, matches the dark site).
+  // The grade that pulls the grey studio backdrop down to near-black lives in
+  // CSS on #kes (GPU-composited, free). It is NOT applied per drawImage —
+  // measured cost of ctx.filter here was ~75ms/draw vs ~7ms raw, which janked
+  // the whole scroll. This string is used ONCE, offscreen, to sample the
+  // graded backdrop colour for --kesbg.
   var GRADE = 'contrast(1.62) brightness(0.76) saturate(0.72)';
 
   var SCRUB_START = 0.15, SCRUB_END = 0.86, FALLBACK_COUNT = 120;
@@ -31,6 +34,8 @@
   // toward it a step at a time, so the sequence always plays through in order
   // instead of bulk-jumping on fast wheel deltas.
   var pos = 0, targetPos = 0, stepping = false;
+  var bgFill = '#4E4948'; // RAW backdrop colour for the letterbox fill; the CSS
+                          // filter on #kes grades fill + frame together.
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function url(i) { return 'frames/frame_' + String(i + 1).padStart(4, '0') + '.' + EXT; }
@@ -47,8 +52,7 @@
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var vw = canvas.clientWidth, vh = canvas.clientHeight;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.filter = 'none';
-    ctx.fillStyle = bgColor;
+    ctx.fillStyle = bgFill;
     ctx.fillRect(0, 0, vw, vh);
     var iw = img.naturalWidth, ih = img.naturalHeight;
     var margin = vw < 820 ? 0.98 : 0.9;
@@ -56,9 +60,7 @@
     var dw = iw * scale, dh = ih * scale;
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-    ctx.filter = GRADE;                       // darken the frame to match the site
     ctx.drawImage(img, (vw - dw) / 2, (vh - dh) / 2, dw, dh);
-    ctx.filter = 'none';
   }
 
   function redraw() { if (cur >= 0) draw(cur); }
@@ -73,12 +75,17 @@
       var W = 64, H = 36;
       var c = document.createElement('canvas'); c.width = W; c.height = H;
       var cx = c.getContext('2d');
-      cx.filter = GRADE;
-      cx.drawImage(img, 0, 0, W, H);
-      cx.filter = 'none';
-      var d = cx.getImageData(0, 0, W, 5).data, r = 0, g = 0, b = 0, n = 0; // top backdrop band
-      for (var p = 0; p < d.length; p += 4) { r += d[p]; g += d[p + 1]; b += d[p + 2]; n++; }
-      bgColor = 'rgb(' + Math.round(r / n) + ',' + Math.round(g / n) + ',' + Math.round(b / n) + ')';
+      function band(filter) {
+        cx.clearRect(0, 0, W, H);
+        cx.filter = filter;
+        cx.drawImage(img, 0, 0, W, H);
+        cx.filter = 'none';
+        var d = cx.getImageData(0, 0, W, 5).data, r = 0, g = 0, b = 0, n = 0; // top backdrop band
+        for (var p = 0; p < d.length; p += 4) { r += d[p]; g += d[p + 1]; b += d[p + 2]; n++; }
+        return 'rgb(' + Math.round(r / n) + ',' + Math.round(g / n) + ',' + Math.round(b / n) + ')';
+      }
+      bgFill  = band('none');   // raw fill — the CSS filter on #kes grades it with the frame
+      bgColor = band(GRADE);    // graded colour — what the page chrome must match
       document.documentElement.style.setProperty('--kesbg', bgColor);
     } catch (e) { /* keep fallback + CSS fallback */ }
   }
@@ -107,6 +114,7 @@
         (function (idx) {
           var img = new Image();
           img.onload = function () {
+            if (img.decode) img.decode().catch(function () {}); // warm the decode cache
             if (idx === 0) { sampleBg(img); sizeCanvas(); cur = 0; draw(0); }
             done();
           };
