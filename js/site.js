@@ -11,12 +11,22 @@
     addEventListener('scroll', onScroll, { passive: true });
   }
 
-  // hero video (home): fade in once it can play
+  // hero video (home): fade in once it's actually playing; retry politely if
+  // the first autoplay attempt is deferred (visibility, power saving, policy).
   var v = document.getElementById('herovideo');
   if (v && !reduced) {
-    var p = v.play();
-    if (p && p.then) p.then(function () { v.classList.add('on'); }).catch(function () {});
-    else v.classList.add('on');
+    v.addEventListener('playing', function () { v.classList.add('on'); }, { once: true });
+    if (!v.paused && v.readyState >= 3) v.classList.add('on');
+    var tryPlay = function () {
+      if (!v.paused) return;
+      var p = v.play();
+      if (p && p.catch) p.catch(function () {});
+    };
+    tryPlay();
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) tryPlay(); });
+    ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
+      addEventListener(ev, tryPlay, { once: true, passive: true });
+    });
   }
 
   // scroll reveals

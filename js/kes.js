@@ -27,6 +27,10 @@
   var SCRUB_START = 0.15, SCRUB_END = 0.86, FALLBACK_COUNT = 120;
   var frames = [], FRAME_COUNT = FALLBACK_COUNT, EXT = 'webp', cur = -1;
   var bgColor = '#141A1F';
+  // frame stepper: scroll sets a TARGET frame; a ticker walks the drawn frame
+  // toward it a step at a time, so the sequence always plays through in order
+  // instead of bulk-jumping on fast wheel deltas.
+  var pos = 0, targetPos = 0, stepping = false;
 
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   function url(i) { return 'frames/frame_' + String(i + 1).padStart(4, '0') + '.' + EXT; }
@@ -114,10 +118,14 @@
     });
   }
 
-  function render(p) {
+  function render(p, immediate) {
     var t = clamp((p - SCRUB_START) / (SCRUB_END - SCRUB_START), 0, 1);
-    var idx = Math.min(FRAME_COUNT - 1, Math.round(t * (FRAME_COUNT - 1)));
-    if (idx !== cur) { cur = idx; draw(idx); }
+    targetPos = t * (FRAME_COUNT - 1);
+    if (immediate || !stepping) {
+      pos = targetPos;
+      var idx = Math.min(FRAME_COUNT - 1, Math.round(pos));
+      if (idx !== cur) { cur = idx; draw(idx); }
+    }
     var h = clamp((p - 0.02) / 0.12, 0, 1);
     if (heroIn) {
       heroIn.style.opacity = (1 - h).toFixed(3);
@@ -132,7 +140,28 @@
     }
   }
 
+  // one tick of the stepper: near the target it moves <1 frame per tick
+  // (strictly sequential draws); far away it accelerates, capped at ~2.4
+  // frames per 60Hz-normalised tick so a full-page jump catches up in about
+  // a second regardless of display refresh rate.
+  function stepFrames(time, deltaTime) {
+    var diff = targetPos - pos;
+    if (diff !== 0) {
+      var mag = Math.abs(diff);
+      if (mag < 0.05) {
+        pos = targetPos;
+      } else {
+        var k = Math.min((deltaTime || 16.67) / 16.67, 3);
+        var step = Math.min(mag, Math.max(0.9 * k, mag * 0.11 * k), 2.4 * k);
+        pos += (diff > 0 ? step : -step);
+      }
+    }
+    var idx = Math.min(FRAME_COUNT - 1, Math.max(0, Math.round(pos)));
+    if (idx !== cur) { cur = idx; draw(idx); }
+  }
+
   function initScroll() {
+    sizeCanvas(); // never depend on frame 0's load success for canvas sizing
     if (!window.gsap || !window.ScrollTrigger || !window.Lenis) {
       cur = 0; draw(0); window.addEventListener('resize', refit, { passive: true }); return;
     }
@@ -140,13 +169,17 @@
     var lenis = new Lenis({ duration: 1.15, easing: function (x) { return Math.min(1, 1.001 - Math.pow(2, -10 * x)); }, smoothWheel: true, touchMultiplier: 1.5 });
     lenis.on('scroll', ScrollTrigger.update);
     gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+    // stepper registered AFTER lenis.raf so each tick steps toward the
+    // targetPos computed from that same tick's scroll update (no added lag)
+    stepping = true;
+    gsap.ticker.add(stepFrames);
     gsap.ticker.lagSmoothing(0);
-    ScrollTrigger.create({ trigger: '.kes-exp', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: function (self) { render(self.progress); } });
+    var st = ScrollTrigger.create({ trigger: '.kes-exp', start: 'top top', end: 'bottom bottom', scrub: true, onUpdate: function (self) { render(self.progress); } });
     window.addEventListener('resize', function () { refit(); ScrollTrigger.refresh(); }, { passive: true });
-    render(0);
+    render(st.progress, true); // honour scroll restoration / mid-page anchors
   }
 
-  function snapshot(p) { document.body.classList.add('snap'); sizeCanvas(); render(p); }
+  function snapshot(p) { document.body.classList.add('snap'); sizeCanvas(); render(p, true); }
 
   function start() {
     if (reduced) { poster(); return; }
