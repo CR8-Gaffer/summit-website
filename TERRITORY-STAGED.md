@@ -20,6 +20,10 @@ serve until Jan/Jul 2027:
 | page titles | "Compliance NSW" | Same — title/SEO decision. |
 | service cards | "03 NSW", "— NSW" | Terse labels; need to know whether the card means coverage or jurisdiction. |
 
+## ⏸ DECISION 2026-08-12: HOLD UNTIL JANUARY 2027 (Caleb)
+
+Option 1 taken — do not merge until the Adelaide launch is real. Revisit Jan 2027.
+
 ## Sequencing warning
 Adelaide trading starts **Jan 2027** and Sydney **Jul 2027**. Publishing "Adelaide &
 Sydney" **today** claims two markets Summit serves in neither. Options:
