@@ -40,6 +40,37 @@
     });
   }
 
+  // Masked line reveals on major headings — the single biggest "premium" tell.
+  // Splits ONLY on top-level <br> so existing inline spans stay intact, and
+  // ONLY where a .rv ancestor exists to trigger it (so the exhaust page's
+  // scrub-driven pillar headings are never touched and can't get stuck).
+  if (!reduced) {
+    var heads = document.querySelectorAll('h1, .lead-hd, .ctablock h2, .posn .big');
+    Array.prototype.forEach.call(heads, function (el) {
+      if (!el.closest('.rv')) return;                       // no trigger -> leave alone
+      var brs = el.getElementsByTagName('br');
+      for (var b = 0; b < brs.length; b++) {
+        if (brs[b].parentNode !== el) return;               // nested <br>: too risky, skip
+      }
+      var lines = [[]], nodes = Array.prototype.slice.call(el.childNodes);
+      nodes.forEach(function (n) {
+        if (n.nodeName === 'BR') lines.push([]);
+        else lines[lines.length - 1].push(n);
+      });
+      if (!lines.length) return;
+      el.textContent = '';
+      lines.forEach(function (nodeList, i) {
+        var mask = document.createElement('span'); mask.className = 'ln';
+        var inner = document.createElement('span'); inner.className = 'ln-i';
+        inner.style.transitionDelay = (i * 0.07).toFixed(2) + 's';
+        nodeList.forEach(function (n) { inner.appendChild(n); });
+        mask.appendChild(inner);
+        el.appendChild(mask);
+      });
+      el.classList.add('split');
+    });
+  }
+
   // scroll reveals
   if (!reduced && 'IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (es) {
