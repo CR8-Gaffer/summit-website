@@ -115,7 +115,10 @@ html.reduced .cue::after{animation:none;}
 /* ---- INNER PAGE HERO (service pages: still image + scrim) ---- */
 .phero{position:relative;min-height:64svh;display:flex;align-items:flex-end;background:#0B1319;overflow:hidden;border-bottom:1px solid var(--line-d);}
 .phero .pimg{position:absolute;inset:0;z-index:0;}
-.phero .pimg img{width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.02);animation:phz 12s var(--ease) both;}
+.phero .pimg img,.phero .pimg video{width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.02);animation:phz 12s var(--ease) both;}
+.phero .pimg video{position:absolute;inset:0;opacity:0;transition:opacity 1.2s ease;}
+.phero .pimg video.on{opacity:1;}
+html.reduced .phero .pimg video{display:none;}
 @keyframes phz{from{transform:scale(1.055);}to{transform:scale(1);}}
 html.reduced .phero .pimg img{animation:none;}
 .phero::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(11,16,20,.9) 0%,rgba(11,16,20,.62) 46%,rgba(11,16,20,.32) 100%),linear-gradient(0deg,rgba(11,16,20,.75),transparent 60%);}

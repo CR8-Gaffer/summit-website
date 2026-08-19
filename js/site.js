@@ -24,19 +24,23 @@
 
   // hero video (home): fade in once it's actually playing; retry politely if
   // the first autoplay attempt is deferred (visibility, power saving, policy).
-  var v = document.getElementById('herovideo');
-  if (v && !reduced) {
-    v.addEventListener('playing', function () { v.classList.add('on'); }, { once: true });
-    if (!v.paused && v.readyState >= 3) v.classList.add('on');
-    var tryPlay = function () {
-      if (!v.paused) return;
-      var p = v.play();
-      if (p && p.catch) p.catch(function () {});
+  var vids = Array.prototype.slice.call(document.querySelectorAll('#herovideo, .phero-video'));
+  if (vids.length && !reduced) {
+    var playAll = function () {
+      vids.forEach(function (v) {
+        if (!v.paused) return;
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});
+      });
     };
-    tryPlay();
-    document.addEventListener('visibilitychange', function () { if (!document.hidden) tryPlay(); });
+    vids.forEach(function (v) {
+      v.addEventListener('playing', function () { v.classList.add('on'); }, { once: true });
+      if (!v.paused && v.readyState >= 3) v.classList.add('on');   // already running before JS ran
+    });
+    playAll();
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) playAll(); });
     ['pointerdown', 'touchstart', 'keydown', 'scroll'].forEach(function (ev) {
-      addEventListener(ev, tryPlay, { once: true, passive: true });
+      addEventListener(ev, playAll, { once: true, passive: true });
     });
   }
 
