@@ -40,35 +40,44 @@
     });
   }
 
-  // Masked line reveals on major headings — the single biggest "premium" tell.
-  // Splits ONLY on top-level <br> so existing inline spans stay intact, and
-  // ONLY where a .rv ancestor exists to trigger it (so the exhaust page's
-  // scrub-driven pillar headings are never touched and can't get stuck).
+  // Masked line reveals — deliberately reserved for the one shape where they
+  // read as real line-by-line motion: a section heading that carries its OWN
+  // .rv trigger, has not already been revealed, and has hand-authored <br>
+  // line breaks. Everything else (hero h1s, which ship pre-revealed and carry
+  // a text-shadow a mask would clip; headings whose trigger is an ancestor)
+  // keeps the plain block reveal — so nothing animates twice, and nothing
+  // pays for a mask that can never transition.
   if (!reduced) {
-    var heads = document.querySelectorAll('h1, .lead-hd, .ctablock h2, .posn .big');
-    Array.prototype.forEach.call(heads, function (el) {
-      if (!el.closest('.rv')) return;                       // no trigger -> leave alone
-      var brs = el.getElementsByTagName('br');
-      for (var b = 0; b < brs.length; b++) {
-        if (brs[b].parentNode !== el) return;               // nested <br>: too risky, skip
-      }
-      var lines = [[]], nodes = Array.prototype.slice.call(el.childNodes);
-      nodes.forEach(function (n) {
-        if (n.nodeName === 'BR') lines.push([]);
-        else lines[lines.length - 1].push(n);
+    try {
+      var heads = document.querySelectorAll('h1.rv, .lead-hd.rv, .ctablock h2.rv, .posn .big.rv');
+      Array.prototype.forEach.call(heads, function (el) {
+        if (el.classList.contains('split') || el.classList.contains('in')) return;
+        var brs = el.getElementsByTagName('br');
+        if (!brs.length) return;                            // no authored lines -> plain reveal
+        for (var b = 0; b < brs.length; b++) {
+          if (brs[b].parentNode !== el) return;             // nested <br>: too risky, skip
+        }
+        var lines = [[]];
+        Array.prototype.forEach.call(el.childNodes, function (n) {
+          if (n.nodeName === 'BR') lines.push([]);
+          else lines[lines.length - 1].push(n);
+        });
+        lines = lines.filter(function (l) {                 // drop blanks from stray <br>
+          return l.some(function (n) { return n.nodeType !== 3 || n.nodeValue.trim(); });
+        });
+        if (lines.length < 2) return;                       // nothing to stagger
+        el.textContent = '';
+        lines.forEach(function (nodeList, i) {
+          var mask = document.createElement('span'); mask.className = 'ln';
+          var inner = document.createElement('span'); inner.className = 'ln-i';
+          inner.style.transitionDelay = (i * 0.07).toFixed(2) + 's';
+          nodeList.forEach(function (n) { inner.appendChild(n); });
+          mask.appendChild(inner);
+          el.appendChild(mask);
+        });
+        el.classList.add('split');
       });
-      if (!lines.length) return;
-      el.textContent = '';
-      lines.forEach(function (nodeList, i) {
-        var mask = document.createElement('span'); mask.className = 'ln';
-        var inner = document.createElement('span'); inner.className = 'ln-i';
-        inner.style.transitionDelay = (i * 0.07).toFixed(2) + 's';
-        nodeList.forEach(function (n) { inner.appendChild(n); });
-        mask.appendChild(inner);
-        el.appendChild(mask);
-      });
-      el.classList.add('split');
-    });
+    } catch (e) { /* heading polish must never take the page reveal down with it */ }
   }
 
   // scroll reveals

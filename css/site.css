@@ -29,13 +29,13 @@ body{margin:0;background:var(--g900);color:#EDEDEB;font-family:var(--sans);font-
 html.reduced body{animation:none;}
 /* film grain: one fixed, non-interactive tile over the whole page. Adds the
    photographic depth that flat dark UI lacks; cheap (composited once). */
-body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.04;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+body::after{content:"";position:fixed;inset:0;z-index:9998;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n' color-interpolation-filters='sRGB'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size:180px 180px;}
 html.reduced body::after{opacity:.03;}
 /* masked line reveal — headings rise from behind their own baseline.
    .ln is the clip window; padding/negative-margin pair keeps descenders. */
-.ln{display:block;overflow:hidden;padding-bottom:.14em;margin-bottom:-.14em;}
+.ln{display:block;overflow:hidden;overflow:clip;padding-bottom:.14em;margin-bottom:-.14em;}
 .ln-i{display:block;transform:translateY(108%);opacity:0;
   transition:transform .95s var(--ease-rev),opacity .95s var(--ease-rev);}
 .rv.in .ln-i{transform:none;opacity:1;}
@@ -77,7 +77,7 @@ html.reduced .nav .r a.l::after{transition:none;}
 /* ---- BUTTONS ---- */
 .btn{font-weight:600;font-size:.92rem;letter-spacing:.01em;padding:.95em 1.5em;border-radius:2px;cursor:pointer;transition:.3s var(--ease);display:inline-flex;align-items:center;gap:.7em;border:1px solid transparent;}
 .btn-solid{background:var(--navy);color:#fff;position:relative;overflow:hidden;isolation:isolate;}
-.btn-solid::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--navy-br);transform:translateX(-100%);transition:transform .55s var(--ease-rev);}
+.btn-solid::before{content:"";position:absolute;inset:0;z-index:-1;background:#3E7396;transform:translateX(-100%);transition:transform .55s var(--ease-rev);}  /* not --navy-br: white label on #4E8FBC is 3.5:1, fails AA */
 .btn-solid:hover{transform:translateY(-1px);} .btn-solid:hover::before{transform:none;}
 html.reduced .btn-solid::before{transition:none;}
 .btn-ghost{color:#fff;border-color:rgba(190,199,205,.32);} .btn-ghost:hover{border-color:var(--navy-br);color:var(--navy-br);}
