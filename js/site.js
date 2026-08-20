@@ -13,13 +13,34 @@
       // slip away scrolling down, return on scroll-up or near the top;
       // a small delta gate stops trackpad micro-jitter from flickering it
       if (Math.abs(y - lastY) > 6) {
-        nav.classList.toggle('hide', y > lastY && y > 160);
+        // never slide the bar away while its menu panel is hanging off it
+        nav.classList.toggle('hide', !nav.classList.contains('open') && y > lastY && y > 160);
         lastY = y;
       }
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
     nav.addEventListener('focusin', function () { nav.classList.remove('hide'); }); // keyboard users always reach it
+
+    // mobile menu: the only route to Services/About/Reporting/Guide on a phone
+    var burger = nav.querySelector('.navtoggle');
+    var panel = nav.querySelector('.navpanel');
+    if (burger && panel) {
+      var setMenu = function (open) {
+        nav.classList.toggle('open', open);
+        burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        burger.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      };
+      burger.addEventListener('click', function () { setMenu(!nav.classList.contains('open')); });
+      panel.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && nav.classList.contains('open')) { setMenu(false); burger.focus(); }
+      });
+      document.addEventListener('click', function (e) {
+        if (nav.classList.contains('open') && !nav.contains(e.target)) setMenu(false);
+      });
+      addEventListener('resize', function () { if (innerWidth > 760) setMenu(false); });
+    }
   }
 
   // hero video (home): fade in once it's actually playing; retry politely if
