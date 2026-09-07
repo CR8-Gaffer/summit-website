@@ -5,18 +5,29 @@
    confirmation without leaving the page. Falls back cleanly when
    the endpoint hasn't been connected yet.
 
-   >>> TO GO LIVE: set FORM_ENDPOINT to your form's POST URL, e.g.
-       https://formspree.io/f/xxxxxxx   (free, ~2 min to create)
-   and set CONTACT_EMAIL to the inbox that should receive enquiries.
+   FORM_ENDPOINT is set at launch to the form provider's POST URL
+   (Formspree / Getform / Netlify all accept this shape). Until then the
+   form offers a mailto fallback to CONTACT_EMAIL.
    ============================================================ */
 (function () {
   'use strict';
 
-  var FORM_ENDPOINT = '';                         // TODO: paste your Formspree/Getform/Netlify endpoint
-  var CONTACT_EMAIL = 'enquiries@summitam.com.au'; // TODO: confirm the real enquiries inbox
+  var FORM_ENDPOINT = '';                          // set at launch
+  var CONTACT_EMAIL = 'enquiries@summitam.com.au';
 
   var form = document.getElementById('enquiry');
   if (!form) return;
+
+  // referrers.html links here with ?role=referrer — preselect the referrer role
+  try {
+    var wantRole = new URLSearchParams(location.search).get('role');
+    var roleSel = form.querySelector('select[name="role"]');
+    if (wantRole && roleSel) {
+      for (var i = 0; i < roleSel.options.length; i++) {
+        if (roleSel.options[i].value.toLowerCase().indexOf(wantRole.toLowerCase()) === 0) { roleSel.selectedIndex = i; break; }
+      }
+    }
+  } catch (e) {}
 
   var card   = form.closest('.form-card') || form.parentNode;
   var status = form.querySelector('.form-status');
@@ -45,7 +56,7 @@
       if (k.charAt(0) === '_' || k === 'company_url' || !String(v).trim()) return;
       lines.push(k.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); }) + ': ' + v);
     });
-    var subject = 'Compliance enquiry — ' + (d.get('business') || 'Website');
+    var subject = 'Site survey request — ' + (d.get('business') || 'Website');
     return 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) +
            '&body=' + encodeURIComponent(lines.join('\n'));
   }
@@ -82,7 +93,7 @@
       showError('We couldn’t send that just now. Please email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> or try again in a moment.');
     }).finally(function () {
-      if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Send enquiry'; }
+      if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Request a site survey'; }
     });
   });
 })();

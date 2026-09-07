@@ -1,6 +1,7 @@
 /* ============================================================
    Summit — KES scroll-scrub engine (exhaust page)
-   Lenis + GSAP ScrollTrigger scrub a canvas frame sequence.
+   Native scroll + GSAP ScrollTrigger scrub a canvas frame sequence.
+   No smoothing / scroll-hijack library is loaded (see initScroll).
    Frames are re-graded DARK at draw time so the studio backdrop
    matches the site's near-black; the exact graded backdrop colour
    is sampled and published to --kesbg so every section on the page

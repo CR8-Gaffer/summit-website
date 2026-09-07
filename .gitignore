@@ -7,3 +7,12 @@
 PRELAUNCH_CHECKLIST.md
 .agents/
 AGENTS.md
+
+# Internal working material. The source folder is a WORKSPACE, not the site —
+# a sync from it must never carry these through. Added 2026-09-07 after
+# .claude/skills and a 16MB _archive/ of old page experiments came across.
+_archive/
+_backup-*/
+.claude/
+_*.html
+css/morph.css
