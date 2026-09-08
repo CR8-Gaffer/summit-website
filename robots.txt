@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://summitam.com.au/sitemap.xml
+Sitemap: https://summitassetmaintenance.com.au/sitemap.xml

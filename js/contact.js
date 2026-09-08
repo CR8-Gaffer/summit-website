@@ -13,7 +13,7 @@
   'use strict';
 
   var FORM_ENDPOINT = '';                          // set at launch
-  var CONTACT_EMAIL = 'enquiries@summitam.com.au';
+  var CONTACT_EMAIL = 'enquiries@summitassetmaintenance.com.au';
 
   var form = document.getElementById('enquiry');
   if (!form) return;
