@@ -14,8 +14,6 @@
 
   var FORM_ENDPOINT = 'https://formspree.io/f/mqpejkdd';                          // set at launch
   var CONTACT_EMAIL = 'enquiries@summitam.au';
-  var CONTACT_PHONE = '0420 452 400';
-  var CONTACT_TEL   = '+61420452400';
 
   var form = document.getElementById('enquiry');
   if (!form) return;
@@ -97,7 +95,7 @@
 
     // Endpoint not wired yet → offer the email fallback rather than posting nowhere.
     if (!FORM_ENDPOINT) {
-      showError('This form isn’t connected to an inbox yet. Please call <a href="tel:' + CONTACT_TEL + '">' + CONTACT_PHONE + '</a> or email ' +
+      showError('This form isn’t connected to an inbox yet. Please email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> and we’ll be straight back to you.');
       return;
     }
@@ -117,7 +115,7 @@
         throw new Error(msg);
       });
     }).catch(function () {
-      showError('We couldn’t send that just now. Please call <a href="tel:' + CONTACT_TEL + '">' + CONTACT_PHONE + '</a>, email ' +
+      showError('We couldn’t send that just now. Please email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> or try again in a moment.');
     }).finally(function () {
       if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Request a site survey'; }
