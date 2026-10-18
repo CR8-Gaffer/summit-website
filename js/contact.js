@@ -12,7 +12,7 @@
 (function () {
   'use strict';
 
-  var FORM_ENDPOINT = '';                          // set at launch
+  var FORM_ENDPOINT = 'https://formspree.io/f/mqpejkdd';                          // set at launch
   var CONTACT_EMAIL = 'enquiries@summitam.au';
   var CONTACT_PHONE = '0420 452 400';
   var CONTACT_TEL   = '+61420452400';
