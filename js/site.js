@@ -115,3 +115,20 @@
     document.querySelectorAll('.rv').forEach(function (el) { el.classList.add('in'); });
   }
 })();
+
+/* ---- carry the enquiry-source tag to the contact form (no cookies, no storage) -------------------
+   A link such as /site-survey.html?src=gbp keeps its tag when the visitor clicks through to contact.html. */
+(function () {
+  try {
+    var p = new URLSearchParams(location.search), keep = ['src', 'utm_source', 'utm_medium', 'utm_campaign'], q = [];
+    keep.forEach(function (k) { var v = p.get(k); if (v) q.push(k + '=' + encodeURIComponent(v)); });
+    if (!q.length) return;
+    document.querySelectorAll('a[href]').forEach(function (a) {
+      var h = a.getAttribute('href') || '';
+      if (/^(mailto:|tel:|#|https?:|\/\/)/i.test(h) || h.indexOf('?') > -1) return;
+      var hash = '', i = h.indexOf('#'); if (i > -1) { hash = h.slice(i); h = h.slice(0, i); }
+      if (!/\.html$/i.test(h)) return;
+      a.setAttribute('href', h + '?' + q.join('&') + hash);
+    });
+  } catch (e) { /* tagging must never break a page */ }
+})();

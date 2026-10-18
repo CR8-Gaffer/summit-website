@@ -14,6 +14,8 @@
 
   var FORM_ENDPOINT = '';                          // set at launch
   var CONTACT_EMAIL = 'enquiries@summitam.au';
+  var CONTACT_PHONE = '0420 452 400';
+  var CONTACT_TEL   = '+61420452400';
 
   var form = document.getElementById('enquiry');
   if (!form) return;
@@ -34,6 +36,29 @@
   var doneEl = card.querySelector('.form-done');
   var btn    = form.querySelector('button[type="submit"]');
   var btnTxt = btn ? btn.querySelector('.txt') : null;
+
+  // ---- Where did this enquiry come from?  No cookies, no analytics: the tag rides on the link.
+  // A link such as site-survey.html?src=gbp is carried to this page by js/site.js; here it is posted with the
+  // enquiry so the register row can be tagged inbound_gbp / referral_partner:<name> / outreach_cold / inbound_web.
+  function param(name) { try { return new URLSearchParams(location.search).get(name) || ''; } catch (e) { return ''; } }
+  function clean(v) { return String(v || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40); }
+  function sourceTag() {
+    var s = clean(param('src'));
+    if (s === 'gbp') return 'inbound_gbp';
+    if (s === 'out') return 'outreach_cold';
+    if (s.indexOf('ref-') === 0 && s.length > 4) return 'referral_partner:' + s.slice(4);
+    return 'inbound_web';
+  }
+  function addHidden(name, value) {
+    var i = document.createElement('input'); i.type = 'hidden'; i.name = name; i.value = value; form.appendChild(i);
+  }
+  var tag = sourceTag();
+  addHidden('src_tag', tag);
+  ['utm_source', 'utm_medium', 'utm_campaign'].forEach(function (k) { var v = clean(param(k)); if (v) addHidden(k, v); });
+  try {
+    var ref = document.referrer ? new URL(document.referrer) : null;
+    if (ref) addHidden('came_from', ref.host === location.host ? ref.pathname : ref.host);
+  } catch (e) {}
 
   function showError(html) {
     if (!status) return;
@@ -72,12 +97,14 @@
 
     // Endpoint not wired yet → offer the email fallback rather than posting nowhere.
     if (!FORM_ENDPOINT) {
-      showError('This form isn’t connected to an inbox yet. Please email us at ' +
+      showError('This form isn’t connected to an inbox yet. Please call <a href="tel:' + CONTACT_TEL + '">' + CONTACT_PHONE + '</a> or email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> and we’ll be straight back to you.');
       return;
     }
 
     if (btn) { btn.disabled = true; if (btnTxt) btnTxt.textContent = 'Sending…'; }
+    var subj = form.querySelector('input[name="_subject"]');   // the subject line tells the inbox where it came from
+    if (subj) subj.value = 'Site survey request — ' + (form.business && form.business.value ? form.business.value : 'website') + ' [' + tag + ']';
 
     fetch(FORM_ENDPOINT, {
       method: 'POST',
@@ -90,7 +117,7 @@
         throw new Error(msg);
       });
     }).catch(function () {
-      showError('We couldn’t send that just now. Please email ' +
+      showError('We couldn’t send that just now. Please call <a href="tel:' + CONTACT_TEL + '">' + CONTACT_PHONE + '</a>, email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> or try again in a moment.');
     }).finally(function () {
       if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Request a site survey'; }
