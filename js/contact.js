@@ -104,7 +104,7 @@
 
     if (btn) { btn.disabled = true; if (btnTxt) btnTxt.textContent = 'Sending…'; }
     var subj = form.querySelector('input[name="_subject"]');   // the subject line tells the inbox where it came from
-    if (subj) subj.value = 'Site survey request — ' + (form.business && form.business.value ? form.business.value : 'website') + ' [' + tag + ']';
+    if (subj) subj.value = 'Site survey request — ' + (form.business && form.business.value ? form.business.value : 'website') + ' [' + tag + (form.state && form.state.value ? ' | ' + form.state.value : '') + ']';
 
     fetch(FORM_ENDPOINT, {
       method: 'POST',
