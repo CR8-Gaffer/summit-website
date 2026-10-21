@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CJ Rowlands | Summit Asset Maintenance</title>
+<meta name="description" content="CJ Rowlands, Director, Summit Asset Maintenance. Commercial kitchen exhaust compliance.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1E4D6B">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+  /* One brand object on a quiet ground: the card is the hero, the page just presents it. */
+  :root{
+    --ground:#E9EAE6; --ink:#1A1E22; --ink-soft:#4A535B; --rule:#C9CEC9; --accent:#1E4D6B;
+    /* card is a fixed brand object — same in both themes */
+    --card-dark:#141A1F; --card-paper:#F4F4F1; --navy:#1E4D6B; --navy-bright:#4E8FBC;
+    --steel:#8B99A3; --steel-l:#BEC7CD; --steel-d:#5D6870; --ink-card:#4A535B;
+    --sans:'Montserrat',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+    --ground:#0C1013; --ink:#EDEDEB; --ink-soft:#AEB8BF; --rule:#2A333A; --accent:#6FA8D0; color-scheme:dark}}
+  :root[data-theme="dark"]{--ground:#0C1013; --ink:#EDEDEB; --ink-soft:#AEB8BF; --rule:#2A333A; --accent:#6FA8D0; color-scheme:dark}
+
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  body{background:var(--ground);color:var(--ink);font-family:var(--sans);
+       font-variant-numeric:tabular-nums lining-nums}
+  .wrap{max-width:560px;margin:0 auto;padding-block:40px 64px;
+        padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+        display:flex;flex-direction:column;gap:28px;align-items:center}
+
+  /* ---- the card: 90 x 55 mm, flips front/back ---- */
+  .stage{width:100%;max-width:440px;aspect-ratio:90/55;perspective:1400px}
+  .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.7,.2,1);cursor:pointer}
+  .card.flipped{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;border-radius:12px;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+        box-shadow:0 22px 44px rgba(0,0,0,.28),0 2px 6px rgba(0,0,0,.18);overflow:hidden;container-type:inline-size}
+  .front{background:#FFFFFF;color:#1A1E22;padding:7.5cqw 8cqw;display:flex;flex-direction:column;justify-content:space-between}
+  .back{background:#FFFFFF;color:#1A1E22;transform:rotateY(180deg);padding:7cqw 8cqw;
+        display:grid;grid-template-columns:1fr auto;gap:5cqw;align-items:center}
+
+  .lock{display:flex;align-items:center;gap:3.4cqw}
+  .lock svg{width:13cqw;height:auto;flex:none}
+  .word{display:flex;flex-direction:column;gap:1.2cqw}
+  .word b{font-weight:800;font-size:7.6cqw;letter-spacing:.14em;line-height:1;color:var(--navy)}
+  .word span{font-family:var(--mono);font-size:2.35cqw;letter-spacing:.24em;color:var(--steel-d)}
+  .fbottom{display:flex;justify-content:space-between;align-items:flex-end;gap:4cqw}
+  .tag{font-family:var(--mono);font-size:2.5cqw;letter-spacing:.2em;text-transform:uppercase;color:var(--steel-d)}
+  .mast-rule{height:.55cqw;background:var(--navy);margin-top:4cqw}
+  .rule{display:none}
+  .abn{font-family:var(--mono);font-size:2.3cqw;color:var(--ink-card);letter-spacing:.06em;text-align:right}
+
+  .who b{display:block;font-weight:800;font-size:6cqw;letter-spacing:-.01em;line-height:1.05}
+  .who b{color:var(--navy)}
+  .who i{display:block;font-style:normal;font-family:var(--mono);font-size:2.6cqw;letter-spacing:.22em;
+         text-transform:uppercase;color:var(--steel-d);margin-top:1.6cqw;padding-bottom:2.4cqw;border-bottom:.3cqw solid #DCDCD6}
+  .lines{margin-top:5cqw;display:grid;gap:1.8cqw;font-family:var(--mono);font-size:2.9cqw;color:#1A1E22}
+  .lines div{display:grid;grid-template-columns:3cqw 1fr;gap:1.6cqw;white-space:nowrap}
+  .lines em{font-style:normal;color:var(--navy)}
+  .qr{width:24cqw;display:flex;flex-direction:column;align-items:center;gap:1.6cqw}
+  .qr svg{width:100%;height:auto;display:block}
+  .qr small{font-family:var(--mono);font-size:1.9cqw;letter-spacing:.14em;color:var(--steel-d);text-transform:uppercase;text-align:center}
+  .backfoot{grid-column:1 / -1;border-top:.3cqw solid #DCDCD6;padding-top:2.4cqw;font-family:var(--mono);
+            font-size:2.1cqw;color:var(--steel-d);display:flex;justify-content:space-between}
+
+  .flipbtn{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;background:none;
+           border:1px solid var(--rule);color:var(--ink-soft);padding:8px 14px;border-radius:999px;cursor:pointer}
+  .flipbtn:hover{color:var(--ink);border-color:var(--ink-soft)}
+  button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  /* ---- contact list under the card ---- */
+  .contact{width:100%;max-width:440px;border-top:1px solid var(--rule)}
+  .row{display:grid;grid-template-columns:84px 1fr auto;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--rule)}
+  .row .k{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
+  .row .v{font-size:15px;min-width:0;overflow-wrap:anywhere;user-select:all}
+  .row .v a{color:var(--ink);text-decoration:none}
+  .row .v a:hover{color:var(--accent)}
+  .copy{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;background:none;border:0;
+        color:var(--accent);cursor:pointer;padding:6px 0 6px 10px}
+  .note{max-width:440px;font-size:13px;line-height:1.55;color:var(--ink-soft);text-align:center}
+  @media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="stage">
+    <div class="card" id="card" role="button" tabindex="0" aria-label="Business card. Press to turn it over.">
+      <section class="face front" aria-label="Front">
+        <div class="lock">
+          <svg viewBox="0 0 120 100" aria-hidden="true">
+            <path d="M60 12 L110 90 L10 90 Z" fill="none" stroke="#5D6870" stroke-width="4.5" stroke-linejoin="round"/>
+            <path d="M60 42 L84 90 L36 90 Z" fill="#1E4D6B"/>
+          </svg>
+          <div class="word"><b>SUMMIT</b><span>COMMERCIAL KITCHEN COMPLIANCE</span></div>
+        </div>
+        <div class="mast-rule"></div>
+        <div class="fbottom">
+          <div><div class="rule"></div><div class="tag">AS 1851-2012 · Certified every visit</div></div>
+          <div class="abn">SUMMIT ASSET MAINTENANCE PTY LTD<br>ABN 37 702 153 222</div>
+        </div>
+      </section>
+      <section class="face back" aria-label="Back">
+        <div>
+          <div class="who"><b>CJ Rowlands</b><i>Director</i></div>
+          <div class="lines">
+            <div><em>m</em><span>+61 411 854 283</span></div>
+            <div><em>e</em><span>cj@summitam.au</span></div>
+            <div><em>w</em><span>summitassetmaintenance.com.au</span></div>
+          </div>
+        </div>
+        <div class="qr"><div id="qr" aria-label="QR code that saves this contact"></div><small>Scan to save</small></div>
+        <div class="backfoot"><span>AS 1851-2012</span><span>Summit Asset Maintenance Pty Ltd</span></div>
+      </section>
+    </div>
+  </div>
+
+  <button class="flipbtn" id="flip" type="button">Turn over</button>
+
+  <div class="contact">
+    <div class="row"><span class="k">Mobile</span><span class="v"><a href="tel:+61411854283">+61 411 854 283</a></span><button class="copy" type="button" data-copy="+61 411 854 283">Copy</button></div>
+    <div class="row"><span class="k">Email</span><span class="v"><a href="mailto:cj@summitam.au">cj@summitam.au</a></span><button class="copy" type="button" data-copy="cj@summitam.au">Copy</button></div>
+    <div class="row"><span class="k">Web</span><span class="v"><a href="https://summitassetmaintenance.com.au" target="_blank" rel="noopener">summitassetmaintenance.com.au</a></span><button class="copy" type="button" data-copy="https://summitassetmaintenance.com.au">Copy</button></div>
+  </div>
+
+  <p class="note">Point a phone camera at the code on the back to save CJ's details straight to contacts.</p>
+</main>
+
+<script>
+  const card = document.getElementById('card');
+  const turn = () => card.classList.toggle('flipped');
+  card.addEventListener('click', turn);
+  card.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); turn(); } });
+  document.getElementById('flip').addEventListener('click', turn);
+
+  // vCard in the QR: the phone's camera offers "Add to contacts" with no download needed.
+  const vcard = [
+    'BEGIN:VCARD','VERSION:3.0',
+    'N:Rowlands;CJ;;;','FN:CJ Rowlands',
+    'ORG:Summit Asset Maintenance Pty Ltd','TITLE:Director',
+    'TEL;TYPE=CELL:+61411854283','EMAIL;TYPE=WORK:cj@summitam.au',
+    'URL:https://summitassetmaintenance.com.au','END:VCARD'
+  ].join('\r\n');
+  try {
+    const q = qrcode(0, 'M'); q.addData(vcard); q.make();
+    const holder = document.getElementById('qr');
+    holder.innerHTML = q.createSvgTag({ cellSize: 4, margin: 0, scalable: true });
+    const svg = holder.querySelector('svg');
+    svg.querySelectorAll('rect').forEach(r => r.setAttribute('fill', '#F4F4F1'));
+    svg.querySelectorAll('path').forEach(p => p.setAttribute('fill', '#1A1E22'));
+  } catch (e) { document.querySelector('.qr small').textContent = 'Details on the left'; }
+
+  document.querySelectorAll('.copy').forEach(b => b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; }
+    catch { const s = getSelection(), r = document.createRange();
+            r.selectNodeContents(b.previousElementSibling); s.removeAllRanges(); s.addRange(r); b.textContent = 'Selected'; }
+    setTimeout(() => b.textContent = 'Copy', 1600);
+  }));
+</script>
+
+</body>
+</html>
