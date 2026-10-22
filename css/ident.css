@@ -1,0 +1,100 @@
+/* ============================================================
+   SUMMIT IDENT — dedicated start-up reveal.
+   A gate, deliberately (Caleb's call, asked three times). So it
+   is built like one that respects the visitor:
+     · once per session
+     · skippable on click / key / scroll / touch
+     · a 4.9s watchdog that force-clears
+     · no JS or reduced motion -> never appears at all
+   The one unacceptable outcome is a stuck black screen; four
+   independent things prevent it.
+
+   The cinematography, in the order it reads:
+     0.00  black. nothing. let it breathe.
+     0.45  the survey plots — far layer, slow, faint
+     1.10  the mark draws OUT OF FOCUS and comes to sharpness
+     2.45  the peak lands
+     2.95  a specular sweep travels the mark
+     3.25  the wordmark rises
+     3.80  hold
+     4.30  the camera pushes THROUGH and the frame lifts
+   A slow dolly (1.055 -> 1.0) runs under all of it, so nothing
+   is ever truly still — the single biggest difference between
+   film and a CSS transition.
+   ============================================================ */
+
+.ident{display:none;}
+
+html.js.id-on .ident{
+  display:grid;place-items:center;position:fixed;inset:0;z-index:9999;
+  background:#06090C;
+  animation:idLift .95s cubic-bezier(.7,0,.2,1) 4.3s forwards;
+}
+html.id-done .ident{display:none !important;}
+html.id-skip .ident{animation:idLift .32s ease forwards !important;}
+@media (prefers-reduced-motion: reduce){ html.js.id-on .ident{display:none;} }
+
+/* the camera */
+.ident-stage{position:relative;display:flex;flex-direction:column;align-items:center;
+  gap:clamp(20px,3vh,34px);
+  animation:idDolly 4.3s cubic-bezier(.33,0,.2,1) both, idPush .95s cubic-bezier(.7,0,.2,1) 4.3s forwards;}
+
+.ident-mark{width:clamp(190px,21vw,310px);height:auto;overflow:visible;
+  animation:idFocus 1.5s cubic-bezier(.2,1,.3,1) 1.05s both;}
+
+/* far layer — the survey */
+.ident .ic path{stroke-dasharray:1;stroke-dashoffset:1;stroke-opacity:.42;stroke-width:1.5px;
+  animation:idDraw 1.15s cubic-bezier(.35,0,.2,1) calc(.45s + .085s * var(--i)) forwards,
+            idSettleA 1s ease-out calc(1.5s + .06s * var(--i)) forwards;}
+.ident .ir path{stroke-dasharray:1;stroke-dashoffset:1;stroke-opacity:.26;
+  animation:idDraw 1s cubic-bezier(.4,0,.25,1) 1.05s forwards,
+            idSettleB .9s ease-out 2.1s forwards;}
+
+/* the mark */
+.ident .io{stroke-dasharray:1;stroke-dashoffset:1;
+  animation:idDraw 1.35s cubic-bezier(.3,0,.12,1) 1.1s forwards;}
+.ident .if{opacity:0;transform:translateY(7px);transform-origin:60px 90px;
+  animation:idLand .75s cubic-bezier(.16,1,.3,1) 2.45s forwards;}
+
+/* the specular sweep — light travelling across the mark */
+.ident .ig{opacity:0;animation:idGlint .05s linear 2.95s forwards;}
+.ident .sw{animation:idSweep 1.15s cubic-bezier(.42,0,.3,1) 2.95s forwards;}
+
+/* the wordmark */
+.ident-wm{display:flex;flex-direction:column;align-items:center;gap:.42em;
+  opacity:0;animation:idUp .9s cubic-bezier(.16,1,.3,1) 3.25s forwards;}
+.iw-n{font:700 clamp(1rem,1.7vw,1.35rem)/1 var(--sans);letter-spacing:.34em;text-indent:.34em;color:#F4F4F1;}
+.iw-s{font:500 .58rem/1 var(--mono);letter-spacing:.26em;text-indent:.26em;text-transform:uppercase;color:var(--steel);}
+
+/* grain + vignette — the texture that stops it looking like vector art */
+.ident-grain{position:absolute;inset:-50%;pointer-events:none;opacity:.16;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='180' height='180' filter='url(%23n)' opacity='.55'/></svg>");
+  animation:idGrain 5s steps(6) infinite;}
+.ident-vig{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(72% 62% at 50% 46%,transparent 38%,rgba(0,0,0,.62) 100%);}
+
+.ident-skip{position:absolute;right:clamp(16px,3vw,34px);bottom:clamp(16px,3vh,34px);
+  padding:.55em 1em;border:1px solid rgba(190,199,205,.22);border-radius:3px;background:none;
+  color:var(--steel);cursor:pointer;font:500 .58rem/1 var(--mono);letter-spacing:.18em;
+  text-transform:uppercase;opacity:0;animation:idUp .6s ease 1.4s forwards;}
+.ident-skip:hover{color:#fff;border-color:var(--steel);}
+
+@keyframes idDraw{to{stroke-dashoffset:0;}}
+@keyframes idSettleA{to{stroke-opacity:.16;stroke-width:1px;}}
+@keyframes idSettleB{to{stroke-opacity:.09;}}
+@keyframes idFocus{from{filter:blur(14px);opacity:.35;transform:scale(.955);}
+                   to{filter:blur(0);opacity:1;transform:none;}}
+@keyframes idLand{to{opacity:1;transform:none;}}
+@keyframes idGlint{to{opacity:1;}}
+@keyframes idSweep{from{transform:translateX(0);} to{transform:translateX(300px);}}
+@keyframes idUp{from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:none;}}
+@keyframes idDolly{from{transform:scale(1.055);} to{transform:scale(1);}}
+@keyframes idPush{to{transform:scale(1.14);opacity:0;filter:blur(3px);}}
+@keyframes idLift{to{opacity:0;visibility:hidden;}}
+@keyframes idGrain{0%{transform:translate(0,0)}25%{transform:translate(-3%,2%)}
+  50%{transform:translate(2%,-3%)}75%{transform:translate(-2%,-2%)}100%{transform:translate(0,0)}}
+
+#sr-replay{position:fixed;right:14px;bottom:14px;z-index:10000;
+  padding:.5em .9em;border:1px solid var(--line-d);border-radius:3px;
+  background:rgba(15,20,24,.9);color:var(--steel-l);cursor:pointer;
+  font:500 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;}

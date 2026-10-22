@@ -1,0 +1,67 @@
+/* ============================================================
+   SUMMIT LOGO REVEAL v2 — "the survey", NO GATE.
+   Nothing is covered and nothing is delayed. The headline, the
+   CTA and every link are visible and clickable from the first
+   frame; the reveal happens in the BACKGROUND layer the hero
+   already owns.
+
+   The hero's contour peak (.hfloor — the brand's own geometry)
+   plots itself line by line at working brightness, then settles
+   to its resting opacity. The nav mark draws in sync and stays.
+   There is no overlay, so there is nothing to dismiss, no
+   watchdog, and no way for this to leave the site unreachable.
+
+   BASE STATE IS THE FINISHED STATE. Every rule lives under
+   html.js.sr2; strip the class, or run without JS, or ask for
+   reduced motion, and you get the normal site exactly as it is.
+   ============================================================ */
+
+@media (prefers-reduced-motion: no-preference){
+
+  /* --- 1. the contours plot, outermost first --- */
+  html.js.sr2 .hero-a .hfloor g:first-of-type path{
+    stroke-dasharray:1;stroke-dashoffset:1;stroke-opacity:.62;stroke-width:1.9px;
+    animation:sr2Draw .8s cubic-bezier(.35,0,.2,1) forwards,
+              sr2SettleA .8s ease-out .78s forwards;
+  }
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(1){animation-delay:0s,.78s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(2){animation-delay:.07s,.82s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(3){animation-delay:.14s,.86s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(4){animation-delay:.21s,.90s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(5){animation-delay:.28s,.94s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(6){animation-delay:.35s,.98s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(7){animation-delay:.42s,1.02s}
+  html.js.sr2 .hero-a .hfloor g:first-of-type path:nth-child(8){animation-delay:.49s,1.06s}
+
+  /* --- 2. the three radials strike out from the apex, in turn --- */
+  html.js.sr2 .hero-a .hfloor g:last-of-type path{
+    stroke-dasharray:1;stroke-dashoffset:1;stroke-opacity:.34;stroke-width:1.5px;
+    animation:sr2Draw .75s cubic-bezier(.4,0,.25,1) .5s forwards,
+              sr2SettleB .7s ease-out 1.15s forwards;
+  }
+
+  /* --- 3. the mark itself draws in the nav and stays --- */
+  html.js.sr2 .brand svg path:first-child{
+    stroke-dasharray:1;stroke-dashoffset:1;
+    animation:sr2Draw .7s cubic-bezier(.5,0,.2,1) .6s forwards;
+  }
+  html.js.sr2 .brand svg path:last-child{
+    opacity:0;animation:sr2In .5s cubic-bezier(.16,1,.3,1) 1.18s forwards;
+  }
+  html.js.sr2 .brand .wm{opacity:0;animation:sr2In .55s ease-out 1.32s forwards;}
+}
+
+@keyframes sr2Draw{to{stroke-dashoffset:0;}}
+/* the plotting lines carry weight while they are being drawn, then settle to
+   the exact resting values the hero already uses — the reveal ENDS as the
+   normal page, it does not leave anything behind */
+@keyframes sr2SettleA{to{stroke-opacity:.13;stroke-width:1px;}}
+@keyframes sr2SettleB{to{stroke-opacity:.06;stroke-width:1px;}}
+@keyframes sr2In{to{opacity:1;}}
+
+/* demo control only — never ships */
+#sr-replay{position:fixed;right:14px;bottom:14px;z-index:10000;
+  padding:.5em .9em;border:1px solid var(--line-d);border-radius:3px;
+  background:rgba(15,20,24,.9);color:var(--steel-l);cursor:pointer;
+  font:500 .62rem/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;}
+#sr-replay:hover{border-color:var(--navy-br);color:#fff;}
