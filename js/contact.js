@@ -20,13 +20,13 @@
   var form = document.getElementById('enquiry');
   if (!form) return;
 
-  // referrers.html links here with ?role=referrer — preselect the referrer role
+  // referrers.html links here with ?enquiry=referrer — preselect the referrer enquiry type
   try {
-    var wantRole = new URLSearchParams(location.search).get('role');
-    var roleSel = form.querySelector('select[name="role"]');
-    if (wantRole && roleSel) {
-      for (var i = 0; i < roleSel.options.length; i++) {
-        if (roleSel.options[i].value.toLowerCase().indexOf(wantRole.toLowerCase()) === 0) { roleSel.selectedIndex = i; break; }
+    var want = new URLSearchParams(location.search).get('enquiry');
+    var typeSel = form.querySelector('select[name="enquiry"]');
+    if (want && typeSel) {
+      for (var i = 0; i < typeSel.options.length; i++) {
+        if (typeSel.options[i].value.toLowerCase().indexOf(want.toLowerCase()) === 0) { typeSel.selectedIndex = i; break; }
       }
     }
   } catch (e) {}
@@ -81,7 +81,7 @@
       if (k.charAt(0) === '_' || k === 'company_url' || !String(v).trim()) return;
       lines.push(k.replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); }) + ': ' + v);
     });
-    var subject = 'Site survey request — ' + (d.get('business') || 'Website');
+    var subject = (d.get('enquiry') || 'Enquiry') + ' — ' + (d.get('business') || 'Website');
     return 'mailto:' + CONTACT_EMAIL + '?subject=' + encodeURIComponent(subject) +
            '&body=' + encodeURIComponent(lines.join('\n'));
   }
@@ -104,7 +104,7 @@
 
     if (btn) { btn.disabled = true; if (btnTxt) btnTxt.textContent = 'Sending…'; }
     var subj = form.querySelector('input[name="_subject"]');   // the subject line tells the inbox where it came from
-    if (subj) subj.value = 'Site survey request — ' + (form.business && form.business.value ? form.business.value : 'website') + ' [' + tag + (form.state && form.state.value ? ' | ' + form.state.value : '') + ']';
+    if (subj) subj.value = (form.enquiry && form.enquiry.value ? form.enquiry.value : 'Enquiry') + ' — ' + (form.business && form.business.value ? form.business.value : 'website') + ' [' + tag + (form.state && form.state.value ? ' | ' + form.state.value : '') + ']';
 
     fetch(FORM_ENDPOINT, {
       method: 'POST',
@@ -120,7 +120,7 @@
       showError('We couldn’t send that just now. Please call <a href="tel:' + CONTACT_TEL + '">' + CONTACT_PHONE + '</a>, email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> or try again in a moment.');
     }).finally(function () {
-      if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Request a site survey'; }
+      if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Send enquiry'; }
     });
   });
 })();
