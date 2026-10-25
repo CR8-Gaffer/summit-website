@@ -14,6 +14,7 @@
       panel.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
       document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && nav.classList.contains('open')) { setMenu(false); burger.focus(); } });
       document.addEventListener('click', function (e) { if (nav.classList.contains('open') && !nav.contains(e.target)) setMenu(false); });
+      nav.addEventListener('focusout', function (e) { if (nav.classList.contains('open') && (!e.relatedTarget || !nav.contains(e.relatedTarget))) setMenu(false); });
       addEventListener('resize', function () { if (innerWidth > 1024) setMenu(false); });
     }
   }
@@ -22,18 +23,54 @@
   if (sysx) {
     document.documentElement.classList.add('sysx-on');
     var btns = sysx.querySelectorAll('.sysx-btn');
+    var pick = function (key) {
+      var hit = false;
+      btns.forEach(function (x) { var on = x.getAttribute('data-key') === key; x.setAttribute('aria-pressed', on ? 'true' : 'false'); if (on) hit = true; });
+      if (hit) sysx.setAttribute('data-sel', key);
+      return hit;
+    };
     btns.forEach(function (b) {
       b.addEventListener('click', function () {
-        sysx.setAttribute('data-sel', b.getAttribute('data-key'));
-        btns.forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+        if (pick(b.getAttribute('data-key')) && history.replaceState) history.replaceState(null, '', '#scope-' + b.getAttribute('data-key'));
       });
     });
+    var m = /^#scope-([a-z]+)$/.exec(location.hash);
+    if (m && pick(m[1])) sysx.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' });
+  }
+  // phone action bar: hidden while the hero's own survey button is on screen
+  var heroCta = document.querySelector('.hero .cta-row .btn');
+  if (heroCta) {
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        document.body.classList.toggle('cta-inview', es[0].isIntersecting);
+      }, { rootMargin: '0px 0px -72px 0px' }).observe(heroCta);
+    } else {
+      var ticking = false;
+      var ctaCheck = function () {
+        ticking = false;
+        var r = heroCta.getBoundingClientRect();
+        document.body.classList.toggle('cta-inview', r.bottom > 0 && r.top < innerHeight - 72);
+      };
+      ctaCheck();
+      addEventListener('scroll', function () { if (!ticking) { ticking = true; requestAnimationFrame(ctaCheck); } }, { passive: true });
+    }
   }
   // table scroll cue only where a table really overflows
+  var tables = Array.prototype.slice.call(document.querySelectorAll('.tscroll')), cueTimer;
   var cue = function () {
-    document.querySelectorAll('.tscroll').forEach(function (t) { t.classList.toggle('can-scroll', t.scrollWidth > t.clientWidth + 1); });
+    var over = tables.map(function (t) { return t.scrollWidth > t.clientWidth + 1; });   // all reads first
+    tables.forEach(function (t, i) {                                                      // then all writes
+      t.classList.toggle('can-scroll', over[i]);
+      if (over[i]) t.setAttribute('tabindex', '0'); else t.removeAttribute('tabindex');
+    });
   };
-  cue(); addEventListener('resize', cue);
+  cue(); addEventListener('resize', function () { clearTimeout(cueTimer); cueTimer = setTimeout(cue, 150); });
+  // guide FAQ: a link to a question opens it
+  var openFaq = function () {
+    var id = location.hash.slice(1); if (!id || id.indexOf('faq-') !== 0) return;
+    var d = document.getElementById(id); if (d && d.tagName === 'DETAILS') { d.open = true; }
+  };
+  openFaq(); addEventListener('hashchange', openFaq);
   // scroll reveals — fail open: nothing is hidden until this script is running and can observe
   var els = document.querySelectorAll('.rv:not(.in)');
   if (!reduced && 'IntersectionObserver' in window) {

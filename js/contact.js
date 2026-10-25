@@ -60,17 +60,70 @@
     if (ref) addHidden('came_from', ref.host === location.host ? ref.pathname : ref.host);
   } catch (e) {}
 
+  var reduced = document.documentElement.classList.contains('reduced') ||
+                (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
   function showError(html) {
     if (!status) return;
     status.className = 'form-status err show';
     status.innerHTML = html;
-    status.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    status.scrollIntoView({ block: 'nearest', behavior: reduced ? 'auto' : 'smooth' });
   }
+
+  // ---- inline field errors: a message under the field, aria-invalid, aria-describedby, focus the first
+  var MESSAGES = {
+    name: 'Enter your name.',
+    business: 'Enter the business or venue name.',
+    email: 'Enter an email address, like you@business.com.au.',
+    state: 'Choose your state or territory.'
+  };
+  function fieldMessage(el) {
+    if (el.validity.valueMissing) return MESSAGES[el.name] || 'This field is required.';
+    if (el.validity.typeMismatch && el.type === 'email') return MESSAGES.email;
+    return el.validationMessage || 'Check this field.';
+  }
+  function setFieldError(el, msg) {
+    var id = 'err-' + el.id, box = document.getElementById(id);
+    if (msg) {
+      if (!box) { box = document.createElement('p'); box.className = 'field-err'; box.id = id; el.insertAdjacentElement('afterend', box); }
+      box.textContent = msg;
+      el.setAttribute('aria-invalid', 'true');
+      var d = (el.getAttribute('aria-describedby') || '').split(' ').filter(function (x) { return x && x !== id; });
+      d.push(id); el.setAttribute('aria-describedby', d.join(' '));
+    } else {
+      if (box) box.remove();
+      el.removeAttribute('aria-invalid');
+      var rest = (el.getAttribute('aria-describedby') || '').split(' ').filter(function (x) { return x && x !== id; });
+      if (rest.length) el.setAttribute('aria-describedby', rest.join(' ')); else el.removeAttribute('aria-describedby');
+    }
+  }
+  function validate() {
+    var first = null;
+    Array.prototype.forEach.call(form.querySelectorAll('input[id], select[id], textarea[id]'), function (el) {
+      if (el.type === 'hidden' || el.closest('.hp')) return;
+      if (el.checkValidity()) { setFieldError(el, ''); return; }
+      setFieldError(el, fieldMessage(el));
+      if (!first) first = el;
+    });
+    if (first) first.focus();
+    return !first;
+  }
+  form.addEventListener('input', function (e) { var el = e.target; dirty = true; if (el.getAttribute('aria-invalid') === 'true' && el.checkValidity()) setFieldError(el, ''); });
+  form.addEventListener('change', function (e) { var el = e.target; if (el.getAttribute('aria-invalid') === 'true' && el.checkValidity()) setFieldError(el, ''); });
+
+  // ---- a typed message is not lost by an accidental click away
+  var dirty = false, sent = false;
+  addEventListener('beforeunload', function (e) { if (dirty && !sent) { e.preventDefault(); e.returnValue = ''; } });
   function clearError() { if (status) status.className = 'form-status'; }
 
   function succeed() {
+    sent = true;
     form.classList.add('sent');
-    if (doneEl) doneEl.classList.add('show');
+    if (doneEl) {
+      doneEl.classList.add('show');
+      var h = doneEl.querySelector('h2');                // focus moves to the confirmation, so it is announced
+      if (h) { h.setAttribute('tabindex', '-1'); h.focus(); }
+    }
   }
 
   function mailtoFallback() {
@@ -93,7 +146,7 @@
     // honeypot: real people leave it empty
     if (form.company_url && form.company_url.value) { succeed(); return; }
 
-    if (!form.checkValidity()) { form.reportValidity(); return; }
+    if (!validate()) return;
 
     // Endpoint not wired yet → offer the email fallback rather than posting nowhere.
     if (!FORM_ENDPOINT) {
@@ -102,7 +155,7 @@
       return;
     }
 
-    if (btn) { btn.disabled = true; if (btnTxt) btnTxt.textContent = 'Sending…'; }
+    if (btn) { btn.disabled = true; btn.classList.add('sending'); if (btnTxt) btnTxt.textContent = 'Sending…'; }
     var subj = form.querySelector('input[name="_subject"]');   // the subject line tells the inbox where it came from
     if (subj) subj.value = (form.enquiry && form.enquiry.value ? form.enquiry.value : 'Enquiry') + ' — ' + (form.business && form.business.value ? form.business.value : 'website') + ' [' + tag + (form.state && form.state.value ? ' | ' + form.state.value : '') + ']';
 
@@ -120,7 +173,7 @@
       showError('We couldn’t send that just now. Please call <a href="tel:' + CONTACT_TEL + '">' + CONTACT_PHONE + '</a>, email ' +
                 '<a href="' + mailtoFallback() + '">' + CONTACT_EMAIL + '</a> or try again in a moment.');
     }).finally(function () {
-      if (btn) { btn.disabled = false; if (btnTxt) btnTxt.textContent = 'Send enquiry'; }
+      if (btn) { btn.disabled = false; btn.classList.remove('sending'); if (btnTxt) btnTxt.textContent = 'Send enquiry'; }
     });
   });
 })();
