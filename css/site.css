@@ -493,5 +493,16 @@ footer .meta a,footer .rule a{display:inline-block;padding:.25em 0;}
 .phead .sheet .pfig .pv-still{display:none;}
 html.reduced .phead .sheet .pfig video{display:none;} html.reduced .phead .sheet .pfig .pv-still{display:block;}
 @media (prefers-reduced-motion:reduce){.phead .sheet .pfig video{display:none;} .phead .sheet .pfig .pv-still{display:block;}}
-/* six nav items: the pressure cleaning link steps out between the burger breakpoint and small laptops (it stays in the menu panel, footer and Services) */
-@media (min-width:861px) and (max-width:1070px){.nav .r a.l[href="pressure-cleaning.html"]{display:none;}}
+/* drone page: the footage is the whole header background */
+.vhero{position:relative;background:var(--g950);color:#fff;min-height:min(72vh,680px);display:flex;align-items:flex-end;overflow:hidden;}
+.vhero .vbg{position:absolute;inset:0;z-index:0;}
+.vhero .vbg video{width:100%;height:100%;object-fit:cover;display:block;opacity:.72;filter:saturate(.85) contrast(1.04);}
+.vhero .vscrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,28,28,.35) 0%,rgba(28,28,28,.55) 55%,rgba(28,28,28,.92) 100%);}
+.vhero .inner{position:relative;z-index:2;max-width:var(--wrap);margin:0 auto;padding-inline:var(--pad);width:100%;padding-top:clamp(48px,8vh,96px);padding-bottom:clamp(36px,5vh,64px);}
+.vhero h1{margin-top:16px;max-width:16ch;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.25);}
+.vhero .sub{color:#E4E2D6;max-width:52ch;margin-top:18px;}
+.vhero .vnote{margin-top:1.2rem;font-size:.8rem;color:var(--steel-l);}
+.crumb.crumb-dark,.crumb.crumb-dark a{color:var(--steel-l);}
+html.reduced .vhero .vbg video{display:none;} html.reduced .vhero .vbg{background:url(../assets/img/drone-facade.jpg) center/cover no-repeat;}
+@media (prefers-reduced-motion:reduce){.vhero .vbg video{display:none;} .vhero .vbg{background:url(../assets/img/drone-facade.jpg) center/cover no-repeat;}}
+@media(max-width:860px){.vhero{min-height:64vh;}}
