@@ -402,7 +402,7 @@ td.sev-m{color:var(--copper-text);} td.sev-n{color:var(--steel-d);}
 .sysx-art svg{width:100%;height:auto;display:block;}
 .sysx-g{transition:opacity .3s var(--ease);}
 .sysx-g rect,.sysx-g path[fill="#fff"]{transition:fill .3s var(--ease),stroke .3s var(--ease);}
-html.sysx-on .sysx[data-sel="canopy"] .sysx-g:not(#g-canopy),html.sysx-on .sysx[data-sel="duct"] .sysx-g:not(#g-duct),html.sysx-on .sysx[data-sel="fan"] .sysx-g:not(#g-fan){opacity:.38;}
+html.sysx-on .sysx[data-sel="canopy"] .sysx-g:not(#g-canopy),html.sysx-on .sysx[data-sel="duct"] .sysx-g:not(#g-duct),html.sysx-on .sysx[data-sel="fan"] .sysx-g:not(#g-fan){opacity:.62;}
 html.sysx-on .sysx[data-sel="canopy"] #g-canopy rect,html.sysx-on .sysx[data-sel="canopy"] #g-canopy path[fill="#fff"],html.sysx-on .sysx[data-sel="duct"] #g-duct rect,html.sysx-on .sysx[data-sel="fan"] #g-fan rect{fill:#E3EEF6;stroke:var(--navy);}
 .sysx-tabs{display:flex;flex-direction:column;gap:6px;}
 .sysx-btn{text-align:left;font-family:var(--sans);font-size:.95rem;font-weight:600;color:var(--ink);background:transparent;border:1px solid var(--hair);border-radius:3px;padding:.7em .9em;cursor:pointer;transition:border-color .2s,background .2s;min-height:44px;}
@@ -467,3 +467,7 @@ a,button,summary,select,label,input,textarea{touch-action:manipulation;}
 a,button,summary{-webkit-tap-highlight-color:rgba(30,77,107,.18);}
 footer .meta a,footer .rule a{display:inline-block;padding:.3em 0;}
 .crumb a{display:inline-block;padding:.65em 0;}
+/* drone page: photograph in the page-head sheet slot */
+.phead .sheet .pfig{margin:0;}
+.phead .sheet .pfig img{display:block;width:100%;height:auto;border-radius:6px;}
+.phead .sheet .pfig figcaption{margin-top:.6rem;font-size:.8rem;color:var(--ink-soft);}
