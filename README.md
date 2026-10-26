@@ -7,18 +7,24 @@ Live: https://summitassetmaintenance.com.au/ (GitHub Pages; the cr8-gaffer.githu
 
 Plain HTML/CSS/JS — no build step, no framework, no package manager.
 Self-hosted fonts (IBM Plex Sans + Montserrat woff2). No third-party scripts.
+The pages are generated from a separate source and published here as-is; edit the source, not these files.
 
 ## Structure
 
 ```
-*.html            one file per page (index, program, certificate, site-survey,
-                  guide, about, contact, form-3, how-often-kitchen-exhaust-cleaning,
-                  referrers, privacy, 404, drone); exhaust, planner, pressure-cleaning,
-                  compliance, reporting and soak-tanks are redirect stubs for retired URLs
+*.html            one file per page: index, program (Services hub), pressure-cleaning,
+                  containment, filters, soak-tanks, certificate, site-survey, guide,
+                  about, contact, form-3, how-often-kitchen-exhaust-cleaning,
+                  referrers, privacy, 404, and drone (coming soon, noindex, not in the
+                  sitemap); exhaust, planner, compliance and reporting are redirect
+                  stubs for retired URLs
 css/site.css      the entire shared design system
 js/site.js        nav behaviour, reveals, phone action bar
 js/contact.js     enquiry form submit (endpoint configured at top of file)
-assets/           fonts (IBM Plex Sans + Montserrat woff2), images, video, favicon, OG card
+assets/           fonts (IBM Plex Sans + Montserrat woff2), images (illustrative
+                  AI-generated photographs in img/gen), video (drone header footage),
+                  favicon, OG card
+sitemap.xml      lists every indexable page; robots.txt allows all
 ```
 
 ## Local development
