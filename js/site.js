@@ -71,6 +71,54 @@
     var d = document.getElementById(id); if (d && d.tagName === 'DETAILS') { d.open = true; }
   };
   openFaq(); addEventListener('hashchange', openFaq);
+  // home hero: swipeable service panels. Arrows, dots, keyboard and touch; never advances on its own.
+  var car = document.querySelector('.hcar');
+  if (car) {
+    var panels = Array.prototype.slice.call(car.querySelectorAll('.hpanel'));
+    var dots = Array.prototype.slice.call(document.querySelectorAll('.hnav .hdot'));
+    var prevB = document.querySelector('.hnav .hprev'), nextB = document.querySelector('.hnav .hnext');
+    var label = document.querySelector('.hnav .hlabel'), count = document.querySelector('.hnav .hcount');
+    var cur = 0, pad = function (k) { return (k < 10 ? '0' : '') + k; };
+    var vids = panels.map(function (p) { return p.querySelector('video'); });
+    var go = function (i) {
+      i = Math.max(0, Math.min(panels.length - 1, i));
+      cur = i;   // keyboard repeats must step from the target, not from wherever the scroll has got to
+      car.scrollTo({ left: panels[i].offsetLeft, behavior: reduced ? 'auto' : 'smooth' });
+    };
+    var mark = function (i) {
+      cur = i;
+      dots.forEach(function (d, k) { d.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+      // aria-disabled, not disabled: a disabled button drops keyboard focus, and the arrow keys with it
+      if (prevB) prevB.setAttribute('aria-disabled', i === 0 ? 'true' : 'false');
+      if (nextB) nextB.setAttribute('aria-disabled', i === panels.length - 1 ? 'true' : 'false');
+      if (label && dots[i]) label.textContent = dots[i].getAttribute('aria-label');
+      if (count) count.textContent = pad(i + 1) + ' / ' + pad(panels.length);
+      // only the panel in view plays; the others hold their poster
+      vids.forEach(function (v, k) {
+        if (!v) return;
+        if (k === i) { if (!reduced && v.paused) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } }
+        else if (!v.paused) v.pause();
+      });
+    };
+    dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k); }); });
+    if (prevB) prevB.addEventListener('click', function () { go(cur - 1); });
+    if (nextB) nextB.addEventListener('click', function () { go(cur + 1); });
+    car.parentNode.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { go(cur - 1); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { go(cur + 1); e.preventDefault(); }
+    });
+    if ('IntersectionObserver' in window) {
+      // mark from the real scroll position, not from the entry: on a slow first paint several panels can
+      // report as intersecting at once and the last one would win, leaving the wrong dot lit and two clips playing
+      var cio = new IntersectionObserver(function (es) {
+        if (es.some(function (e) { return e.isIntersecting; })) mark(Math.round(car.scrollLeft / car.clientWidth));
+      }, { root: car, threshold: 0.6 });
+      panels.forEach(function (p) { cio.observe(p); });
+    } else {
+      car.addEventListener('scroll', function () { mark(Math.round(car.scrollLeft / car.clientWidth)); }, { passive: true });
+    }
+    mark(0);
+  }
   // scroll reveals — fail open: nothing is hidden until this script is running and can observe
   var els = document.querySelectorAll('.rv:not(.in)');
   if (!reduced && 'IntersectionObserver' in window) {
