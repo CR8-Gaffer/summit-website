@@ -1,16 +1,7 @@
 .DS_Store
-
-# Internal working documents — must never reach the public repo or the site.
-# PRELAUNCH_CHECKLIST.md was publicly readable and named the owner, disclosed
-# unannounced SA/NT market plans, and stated the ABN and insurance were
-# unconfirmed. It stays in the iCloud source folder only.
 PRELAUNCH_CHECKLIST.md
 .agents/
 AGENTS.md
-
-# Internal working material. The source folder is a WORKSPACE, not the site —
-# a sync from it must never carry these through. Added 2026-09-07 after
-# .claude/skills and a 16MB _archive/ of old page experiments came across.
 _archive/
 _backup-*/
 .claude/

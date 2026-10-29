@@ -1,7 +1,7 @@
 # Summit Asset Maintenance — website
 
 Static marketing site for Summit Asset Maintenance Pty Ltd, Adelaide.
-Live: https://summitassetmaintenance.com.au/ (GitHub Pages; the cr8-gaffer.github.io/summit-website origin redirects there).
+Live: https://summitassetmaintenance.com.au/ (GitHub Pages).
 
 ## Stack
 
@@ -22,7 +22,7 @@ css/site.css      the entire shared design system
 js/site.js        nav behaviour, reveals, phone action bar
 js/contact.js     enquiry form submit (endpoint configured at top of file)
 assets/           fonts (IBM Plex Sans + Montserrat woff2), images (illustrative
-                  AI-generated photographs in img/gen), video (drone header footage),
+                  generated imagery in img/gen), video (hero and page-header footage),
                   favicon, OG card
 sitemap.xml      lists every indexable page; robots.txt allows all
 ```

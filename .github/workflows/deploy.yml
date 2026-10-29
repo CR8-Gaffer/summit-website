@@ -31,9 +31,8 @@ jobs:
         with:
           path: .
       # GitHub Pages intermittently returns "Deployment failed, try again
-      # later" (seen on the Elmac deploys, 5 Jul 2026 — build green both
-      # times). First attempt may fail; a second runs after a pause. If both
-      # fail, the job fails for real.
+      # later" on a green build. First attempt may fail; a second runs after
+      # a pause. If both fail, the job fails for real.
       - id: deploy1
         uses: actions/deploy-pages@v4
         continue-on-error: true

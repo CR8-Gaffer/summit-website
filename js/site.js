@@ -71,6 +71,30 @@
     var d = document.getElementById(id); if (d && d.tagName === 'DETAILS') { d.open = true; }
   };
   openFaq(); addEventListener('hashchange', openFaq);
+  // hero footage: sources are attached here, never in the markup, so reduced-motion and no-script visitors fetch no video
+  var motionPaused = false;
+  try { motionPaused = localStorage.getItem('sam-footage') === 'paused'; } catch (e) {}
+  var attach = function (v) {
+    if (!v || v.dataset.on) return;
+    if (v.dataset.poster && !v.getAttribute('poster')) v.setAttribute('poster', v.dataset.poster);
+    v.src = v.dataset.src; v.dataset.on = '1';
+  };
+  var playIf = function (v) { if (!v || reduced || motionPaused) return; attach(v); var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); };
+  var pauseBtns = Array.prototype.slice.call(document.querySelectorAll('.hpause,.vpause'));
+  var paintPause = function () { pauseBtns.forEach(function (b) { b.setAttribute('aria-pressed', motionPaused ? 'true' : 'false'); b.textContent = motionPaused ? 'Play footage' : 'Pause footage'; }); };
+  var setPaused = function (p) {
+    motionPaused = p;
+    try { localStorage.setItem('sam-footage', p ? 'paused' : 'playing'); } catch (e) {}
+    paintPause();
+    document.querySelectorAll('video[data-src]').forEach(function (v) {
+      var panel = v.closest('.hpanel');
+      if (p) { if (!v.paused) v.pause(); }
+      else if (!panel || !panel.hasAttribute('inert')) playIf(v);
+    });
+  };
+  pauseBtns.forEach(function (b) { b.addEventListener('click', function () { setPaused(!motionPaused); }); });
+  paintPause();
+  document.querySelectorAll('.vhero video[data-src]').forEach(playIf);
   // home hero: swipeable service panels. Arrows, dots, keyboard and touch; never advances on its own.
   var car = document.querySelector('.hcar');
   if (car) {
@@ -80,10 +104,18 @@
     var label = document.querySelector('.hnav .hlabel'), count = document.querySelector('.hnav .hcount');
     var cur = 0, pad = function (k) { return (k < 10 ? '0' : '') + k; };
     var vids = panels.map(function (p) { return p.querySelector('video'); });
+    var goTimer;
     var go = function (i) {
       i = Math.max(0, Math.min(panels.length - 1, i));
       cur = i;   // keyboard repeats must step from the target, not from wherever the scroll has got to
-      car.scrollTo({ left: panels[i].offsetLeft, behavior: reduced ? 'auto' : 'smooth' });
+      var left = panels[i].offsetLeft;
+      if (reduced) { car.scrollTo({ left: left }); return; }
+      // a smooth programmatic scroll inside a mandatory-snap container is sometimes cancelled by the snap itself
+      // (seen on fresh loads): lift the snap for the duration, then land it exactly if it did not arrive
+      car.style.scrollSnapType = 'none';
+      car.scrollTo({ left: left, behavior: 'smooth' });
+      clearTimeout(goTimer);
+      goTimer = setTimeout(function () { car.style.scrollSnapType = ''; if (Math.abs(car.scrollLeft - left) > 8) car.scrollTo({ left: left }); }, 900);
     };
     var mark = function (i) {
       cur = i;
@@ -93,12 +125,16 @@
       if (nextB) nextB.setAttribute('aria-disabled', i === panels.length - 1 ? 'true' : 'false');
       if (label && dots[i]) label.textContent = dots[i].getAttribute('aria-label');
       if (count) count.textContent = pad(i + 1) + ' / ' + pad(panels.length);
-      // only the panel in view plays; the others hold their poster
-      vids.forEach(function (v, k) {
-        if (!v) return;
-        if (k === i) { if (!reduced && v.paused) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } }
-        else if (!v.paused) v.pause();
+      // panels out of view are inert: Tab cannot land in them (which would drag the scroller and start their clips)
+      panels.forEach(function (p, k) {
+        p.classList.toggle('cur', k === i);
+        // tabindex mirrors inert for the scanners that do not honour it
+        var focusables = p.querySelectorAll('a, button');
+        if (k === i) { p.removeAttribute('inert'); p.removeAttribute('aria-hidden'); focusables.forEach(function (f) { f.removeAttribute('tabindex'); }); }
+        else { p.setAttribute('inert', ''); p.setAttribute('aria-hidden', 'true'); focusables.forEach(function (f) { f.setAttribute('tabindex', '-1'); }); }
       });
+      // only the panel in view plays; the others hold their poster
+      vids.forEach(function (v, k) { if (!v) return; if (k === i) playIf(v); else if (!v.paused) v.pause(); });
     };
     dots.forEach(function (d, k) { d.addEventListener('click', function () { go(k); }); });
     if (prevB) prevB.addEventListener('click', function () { go(cur - 1); });
@@ -118,6 +154,7 @@
       car.addEventListener('scroll', function () { mark(Math.round(car.scrollLeft / car.clientWidth)); }, { passive: true });
     }
     mark(0);
+    if (!reduced) addEventListener('load', function () { vids.forEach(function (v) { if (v && v.dataset.poster && !v.getAttribute('poster')) v.setAttribute('poster', v.dataset.poster); }); });
   }
   // scroll reveals — fail open: nothing is hidden until this script is running and can observe
   var els = document.querySelectorAll('.rv:not(.in)');
