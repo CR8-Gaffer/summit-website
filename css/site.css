@@ -216,7 +216,7 @@ html.reduced .hcar{scroll-behavior:auto;}
 .vcar .hpanel .cta-row{display:flex;flex-wrap:wrap;gap:.9rem 1.2rem;align-items:center;margin-top:22px;}
 .vcar .hpanel .vnote{margin-top:1.2rem;font-size:.8rem;color:var(--steel-l);}
 .vcar .hnav{padding-top:18px;}
-.vs-kes{--vstill:url(../assets/img/gen/kes-hero.jpg);} .vs-cont{--vstill:url(../assets/img/gen/containment-hero.jpg);} .vs-filt{--vstill:url(../assets/img/gen/filters-hero.jpg);}
+.vs-kes{--vstill:url(../assets/img/gen/kes-hero.jpg);} .vs-cont{--vstill:url(../assets/img/gen/containment-hero.jpg);} .vs-filt{--vstill:url(../assets/img/gen/filters-hero.jpg);} .vcar .vs-pw{--vstill:url(../assets/img/gen/pw-hero.jpg);} .vcar .vs-drone{--vstill:url(../assets/img/drone-facade.jpg);}   /* the .vhero-scoped rules do not reach the home carousel */
 html.reduced .vcar .vbg video{display:none;} html.reduced .vcar .vbg{background:var(--vstill) center/cover no-repeat;}
 @media (prefers-reduced-motion:reduce){.vcar .vbg video{display:none;} .vcar .vbg{background:var(--vstill) center/cover no-repeat;}}
 @media(max-width:900px){.vcar .hcar{min-height:64vh;} .hero.vcar .hnav{padding:14px var(--pad) 22px;}}
